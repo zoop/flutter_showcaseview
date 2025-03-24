@@ -55,6 +55,8 @@ class Showcase extends StatefulWidget {
   /// Represents summary description of target widget
   final String? description;
 
+  final Widget? textWidget;
+
   /// ShapeBorder of the highlighted box when target widget will be showcased.
   ///
   /// Note: If [targetBorderRadius] is specified, this parameter will be ignored.
@@ -371,6 +373,7 @@ class Showcase extends StatefulWidget {
     required this.key,
     required this.description,
     required this.child,
+    this.textWidget = null,
     this.title,
     this.titleTextAlign = TextAlign.start,
     this.descriptionTextAlign = TextAlign.start,
@@ -525,6 +528,7 @@ class Showcase extends StatefulWidget {
         scaleAnimationCurve = Curves.decelerate,
         scaleAnimationAlignment = null,
         disableScaleAnimation = null,
+        this.textWidget = null,
         title = null,
         description = null,
         titleTextAlign = TextAlign.start,
@@ -609,9 +613,6 @@ class _ShowcaseState extends State<Showcase> {
             Duration(seconds: showCaseWidgetState.autoPlayDelay.inSeconds),
             _nextIfAny);
       }
-    } else if (timer?.isActive ?? false) {
-      timer?.cancel();
-      timer = null;
     }
   }
 
@@ -652,13 +653,6 @@ class _ShowcaseState extends State<Showcase> {
       );
     }
     return widget.child;
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    timer = null;
-    super.dispose();
   }
 
   void initRootWidget() {
@@ -804,6 +798,7 @@ class _ShowcaseState extends State<Showcase> {
             title: widget.title,
             titleTextAlign: widget.titleTextAlign,
             description: widget.description,
+            textWidget: widget.textWidget,
             descriptionTextAlign: widget.descriptionTextAlign,
             titleAlignment: widget.titleAlignment,
             descriptionAlignment: widget.descriptionAlignment,
@@ -817,10 +812,7 @@ class _ShowcaseState extends State<Showcase> {
             showArrow: widget.showArrow,
             contentHeight: widget.height,
             contentWidth: widget.width,
-            onTooltipTap:
-                widget.disposeOnTap == true || widget.onToolTipClick != null
-                    ? _getOnTooltipTap
-                    : null,
+            onTooltipTap: _getOnTooltipTap,
             tooltipPadding: widget.tooltipPadding,
             disableMovingAnimation: widget.disableMovingAnimation ??
                 showCaseWidgetState.disableMovingAnimation,
@@ -921,10 +913,7 @@ class _TargetWidget extends StatelessWidget {
           ? IgnorePointer(
               child: targetWidgetContent(),
             )
-          : MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: targetWidgetContent(),
-            ),
+          : targetWidgetContent(),
     );
   }
 
